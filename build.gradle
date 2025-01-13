@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.translate.german'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation('org.projectlombok:lombok:1.18.36')
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'org.apache.logging.log4j:log4j-core:2.24.1'
+
+    // translation cloud client library
+    implementation 'com.google.cloud:google-cloud-translate:2.55.0'
+
+    implementation 'com.opencsv:opencsv:4.1'
+
+    implementation 'org.apache.poi:poi-ooxml:5.4.0'
+
+}
+
+test {
+    useJUnitPlatform()
+}
