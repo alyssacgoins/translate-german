@@ -1,5 +1,9 @@
 package com.translate.german.translate;
 
+import static com.translate.german.ErrorCodes.TRANSLATOR_ERROR_001;
+import static com.translate.german.ErrorCodes.TRANSLATOR_ERROR_002;
+import static com.translate.german.ErrorCodes.TRANSLATOR_RUNTIME_EXCEPTION;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.FileInputStream;
@@ -28,10 +32,10 @@ public class Translator {
   private static final String DEEPL_TRANSLATE_URL = "https://api-free.deepl.com/v2/translate";
   private static final String DEEPL_AUTH_KEY = "DeepL-Auth-Key";
   private static final String APPLICATION_PROPERTIES_PATH = "src/main/resources/application.properties";
+  private static final String DEEPL_API_KEY = "deepl_key";
 
   private static final String SPACE = " ";
   private static final String EMPTY_STRING = "";
-
 
   private static final String TRANSLATIONS = "translations";
   private static final String TEXT = "text";
@@ -51,12 +55,7 @@ public class Translator {
     try {
       HttpClient client = HttpClient.newBuilder().build();
 
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(new URI(DEEPL_TRANSLATE_URL))
-          .header(AUTH_HEADER, DEEPL_AUTH_KEY + SPACE + getDeeplAuthKey())
-          .header(CONTENT_HEADER, APPLICATION_JSON)
-          .POST(BodyPublishers.ofString(createDeepLPostBody(input)))
-          .build();
+      HttpRequest request = createDeepLTranslatePOSTRequest(input);
 
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
       Optional<String> translation = getTranslationFromJsonResponse(response.body());
@@ -65,11 +64,26 @@ public class Translator {
         output = translation.get();
       }
 
-      System.out.println(output);
-    } catch (URISyntaxException | IOException | InterruptedException e) {
-      log.error("InterruptedException ", e);
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(TRANSLATOR_RUNTIME_EXCEPTION, e);
     }
     return output;
+  }
+
+  private HttpRequest createDeepLTranslatePOSTRequest(final String input) {
+    URI uri = URI.create(EMPTY_STRING);
+    try {
+      uri =new URI(DEEPL_TRANSLATE_URL);
+    } catch(URISyntaxException e) {
+      log.error(TRANSLATOR_ERROR_001, e);
+    }
+
+    return HttpRequest.newBuilder()
+        .uri(uri)
+        .header(AUTH_HEADER, DEEPL_AUTH_KEY + SPACE + getDeeplAuthKey())
+        .header(CONTENT_HEADER, APPLICATION_JSON)
+        .POST(BodyPublishers.ofString(createDeepLPostBody(input)))
+        .build();
   }
 
   /**
@@ -82,10 +96,10 @@ public class Translator {
     Properties props = new Properties();
     try {
       props.load(new FileInputStream(APPLICATION_PROPERTIES_PATH));
-      key = props.getProperty("deepl_key");
+      key = props.getProperty(DEEPL_API_KEY);
 
     } catch (IOException e) {
-      log.error("Error", e);
+      log.error(TRANSLATOR_ERROR_002, e);
     }
 
 

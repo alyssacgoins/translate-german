@@ -1,6 +1,6 @@
 package com.translate.german.translate;
 
-import static com.translate.german.ErrorCodes.PROCESSING_ERROR_001;
+import static com.translate.german.ErrorCodes.PROCESSOR_ERROR_001;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -40,7 +40,7 @@ public class Processor {
       }
 
     } catch (IOException e) {
-      log.error(PROCESSING_ERROR_001, e);
+      log.error(PROCESSOR_ERROR_001, e);
     }
     return translations;
   }
