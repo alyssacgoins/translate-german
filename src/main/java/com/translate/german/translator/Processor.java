@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Process body-text.csv into translated pairs.
+ */
 @Slf4j
 public class Processor {
 
@@ -20,23 +23,29 @@ public class Processor {
   Translator translator = new Translator();
 
   // English-language dictionary calls (Only EN for now)
-  Dictionary dictionary = new Dictionary();
+  Dictionary englishDictionary = new Dictionary(Language.EN);
 
-  public Map<String, String> process() {
+  /**
+   * Return a map of words retrieved from body-text.csv and their corresponding translations.
+   *
+   * @return Map<String, String></String,>
+   */
+  public Map<String, String> getTranslationMapFromCsv() {
     Map<String, String> translations = new HashMap<>();
 
     try (BufferedReader br = new BufferedReader(new FileReader(BODY_TEXT_CSV))) {
       String line = br.readLine();
 
+      //todo: this is only in place to limit # of DeepL API calls.
       int counter = 0;
       for (String value : line.split(COMMA)) {
-        if (counter>10) {
+        if (counter > 100) {
           break;
         }
         String translation = translator.translate(value);
 
         // If the initial word is English, ignore this pair.
-        if (translation.equalsIgnoreCase(value) && dictionary.isLang(value, Language.EN)) {
+        if (translation.equalsIgnoreCase(value) && englishDictionary.isLang(value)) {
           continue;
         }
         translations.put(value, translator.translate(value));
@@ -47,10 +56,6 @@ public class Processor {
       log.error(PROCESSING_ERROR_001, e);
     }
     return translations;
-  }
-
-  public boolean isIdentical(String word, String translation) {
-    return true;
   }
 
 }
