@@ -11,7 +11,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Retrieves translation of given words/set of words
+ * Retrieves translation of given words/set of words using DeepL API.
  */
 @Slf4j
 public class Translator {
@@ -32,16 +32,13 @@ public class Translator {
     try {
       HttpClient client = HttpClient.newBuilder().build();
 
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(new URI(DEEPL_TRANSLATE_URL))
+      HttpRequest request = HttpRequest.newBuilder().uri(new URI(DEEPL_TRANSLATE_URL))
           .header("Authorization", "DeepL-Auth-Key 6bf220ba-bb0a-463b-8262-b43a761d2b73:fx")
-          .header("Content-Type", "application/json")
-          .POST(BodyPublishers.ofString(post))
-          .build();
+          .header("Content-Type", "application/json").POST(BodyPublishers.ofString(post)).build();
       HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
       output = response.body();
       System.out.println(output);
-    } catch(URISyntaxException | IOException | InterruptedException e) {
+    } catch (URISyntaxException | IOException | InterruptedException e) {
       log.error("InterruptedException ", e);
     }
     return output;

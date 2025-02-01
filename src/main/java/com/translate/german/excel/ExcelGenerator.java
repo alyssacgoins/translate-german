@@ -12,6 +12,9 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+/**
+ * Generate Excel file containing word/translation pairs.
+ */
 @Slf4j
 public class ExcelGenerator {
 
